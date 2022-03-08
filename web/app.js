@@ -1,9 +1,7 @@
 const express = require('express');
 const app = express();
-const package = require('../package.json')
+const applyRoutes = require('../routes');
 
-app.get('/api/rest/v1/hello', (req, res) => { 
-  res.send({now: new Date(), name: package.name, version: package.version});
-});
+applyRoutes(app);
 
 module.exports = app; 
