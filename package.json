@@ -1,0 +1,19 @@
+{
+  "name": "mpqdata-api-js",
+  "version": "0.1.0-dev.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zometer/mpqdata-api-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zometer/mpqdata-api-js/issues"
+  },
+  "homepage": "https://github.com/zometer/mpqdata-api-js#readme"
+}
