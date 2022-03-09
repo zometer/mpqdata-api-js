@@ -1,9 +1,9 @@
-const db = require('../config/db'); 
+const config = require('../config'); 
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize(db.url, {
-  username: db.username, 
-  password: db.password, 
+const sequelize = new Sequelize(config.db.url, {
+  username: config.db.username, 
+  password: config.db.password, 
   dialect: 'postgres'
 });
 
