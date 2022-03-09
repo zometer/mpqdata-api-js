@@ -12,6 +12,4 @@ const remoteYaml = fetch(configUrl, {
 
 const remoteConfig = YAML.parse(remoteYaml); 
 
-console.log("remoteConfig\n", remoteConfig);
-
 module.exports = remoteConfig;
