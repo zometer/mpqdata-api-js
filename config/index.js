@@ -11,7 +11,6 @@ const config = {
   }
 };
 
-
 const remoteYaml = fetch(configUrl, {
   headers: { 
     "Accept": "application/vnd.github.v3.raw", 
