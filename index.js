@@ -1,3 +1,4 @@
 require('dotenv').config();
-import('./config/index.mjs')
+require('./config');
+console.log(`starting application`);
 const server = require ('./web/server')
