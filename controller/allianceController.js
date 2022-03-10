@@ -38,16 +38,4 @@ const allianceController = {
   }
 }; 
 
-/*
-	@RequestMapping("/api/rest/v{version}/search/alliance")
-	public List<AllianceSearchResult> searchAlliances(
-		@RequestParam(required = true, value="q") String query,
-		@RequestParam(required = false, value="includePrivate", defaultValue = "false") boolean includePrivateAlliances,
-		@RequestParam(required = false, value="includeFull", defaultValue = "false") boolean includeFullAlliances
-	)
-	{
-		return allianceService.searchAlliances(query, !includeFullAlliances, !includePrivateAlliances);
-	}
-*/
-
 module.exports = allianceController;
