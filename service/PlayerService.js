@@ -5,14 +5,17 @@ const DisplayPlayer = require("../model/DisplayPlayer");
 const Player = require("../model/Player");
 const parseTemplatedString = require("../util/parseTemplatedString");
 const { Sequelize } = require("sequelize");
+const AbilityLevel = require("../model/AbilityLevel");
+const MpqdataApiError = require("../error/MpqdataApiError");
 
 const headers = {}
 headers[config.remoteApis.mpq.deviceIdHeader] = config.remoteApis.mpq.deviceId; 
 
 const fetchRosterEntries = async (apiCharacters) => { 
+  const regEx = /_\w+$/g;
   const criteriaList = apiCharacters
-    .map( c=> {
-      let mpqCharacterKey = c.character_identifier.replaceAll(/_\w+$/g, ""); 
+    .map( c => {
+      let mpqCharacterKey = c.character_identifier.replaceAll(regEx, ""); 
       let effectiveLevel = c.effective_level; 
       let localeLanguage = 'en'; 
       return { mpqCharacterKey, effectiveLevel, localeLanguage }; 
@@ -24,11 +27,35 @@ const fetchRosterEntries = async (apiCharacters) => {
     attributes: {
       exclude: ['characterBio']
     },
+    include: {model: AbilityLevel, as: 'abilityLevels'},
     where: {
       [Op.or]: criteriaList
-    }
+    }, 
+    order: [['displayLevel', 'DESC'], ['rarity', 'DESC'], 'name', ['abilityLevels', 'ordinalPosition']]
   } );
-  return characters;
+
+  const dbCharsWithAbilLvls = apiCharacters.map(apiChar => {
+    const mpqCharId = apiChar.character_identifier.replaceAll(regEx, "");
+    let dbChar = characters.find(c => c.mpqCharacterKey === mpqCharId && c.effectiveLevel === apiChar.effective_level); 
+    if (dbChar === undefined) { 
+      console.log("couldn't find", apiChar); 
+      throw new MpqdataApiError("Error mapping API character: " + apiChar);
+    }
+
+    dbChar = JSON.parse(JSON.stringify(dbChar));
+    for (let i=0; i < apiChar.ability_levels.length; i++) { 
+      const level = convertAbilityLevel(apiChar.ability_levels[i]); 
+      dbChar.abilityLevels[i].level = level; 
+    }
+
+    return dbChar;
+  });
+
+  return dbCharsWithAbilLvls;
+}
+
+const convertAbilityLevel = (rawLevel) => { 
+  return (rawLevel / 5) + 1; 
 }
 
 const PlayerService = {
