@@ -5,7 +5,8 @@ const logger = require('log4js').getLogger('sequelize');
 const sequelize = new Sequelize(config.db.url, {
   username: config.db.username,
   password: config.db.password,
-  dialect: 'postgres'
+  dialect: 'postgres',
+  logging: (msg) => logger.trace(msg)
 });
 
 sequelize.authenticate()
