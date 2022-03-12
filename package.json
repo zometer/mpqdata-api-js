@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npx eslint . && npm run package",
     "start": "nodemon index.js",
     "package": "mkdir -p dist && npm pack --pack-destination dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
