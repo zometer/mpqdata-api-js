@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const applyRoutes = require('../routes');
+const logger = require('log4js').getLogger('web.app');
 
 applyRoutes(app);
 
@@ -10,7 +11,7 @@ app.use('/api/rest/*', (error, req, res, next) => {
   if (process.env.NODE_ENV !== 'production') {
     err.stack = error.stack;
   }
-  console.error(error);
+  logger.error(error);
   res.status(500);
   res.send(err);
 });

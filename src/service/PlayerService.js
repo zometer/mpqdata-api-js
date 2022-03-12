@@ -7,6 +7,7 @@ const parseTemplatedString = require('../util/parseTemplatedString');
 const { Sequelize } = require('sequelize');
 const AbilityLevel = require('../model/AbilityLevel');
 const MpqdataApiError = require('../error/MpqdataApiError');
+const logger = require('log4js').getLogger('PlayerService');
 
 const headers = {};
 headers[config.remoteApis.mpq.deviceIdHeader] = config.remoteApis.mpq.deviceId;
@@ -38,7 +39,7 @@ const fetchRosterEntries = async (apiCharacters) => {
     const mpqCharId = apiChar.character_identifier.replaceAll(regEx, '');
     let dbChar = characters.find(c => c.mpqCharacterKey === mpqCharId && c.effectiveLevel === apiChar.effective_level);
     if (dbChar === undefined) {
-      console.log("couldn't find", apiChar);
+      logger.error("couldn't find", apiChar);
       throw new MpqdataApiError('Error mapping API character: ' + apiChar);
     }
 
@@ -77,7 +78,7 @@ const PlayerService = {
     });
     const newMembers = members.filter(m => m.playerId === null);
     if (newMembers.length > 0) {
-      console.log('newMembers', newMembers);
+      logger.debug('newMembers', newMembers);
       Player.bulkCreate(newMembers);
     }
   }

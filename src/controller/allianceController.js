@@ -2,6 +2,7 @@ const MpqdataApiError = require('../error/MpqdataApiError');
 const AllianceService = require('../service/AllianceService');
 const PlayerService = require('../service/PlayerService');
 const _ = require('lodash');
+const logger = require('log4js').getLogger('allianceController');
 
 const allianceController = {
   fetchByName: async (req, res, next) => {
@@ -27,7 +28,7 @@ const allianceController = {
     const includeFull = _.has(req, 'query.includeFull') ? req.query.includeFull : false;
     const includePrivate = _.has(req, 'query.includePrivate') ? req.query.includePrivate : false;
 
-    console.log('req.query', req.query);
+    logger.debug('req.query', req.query);
 
     if ( ! searchName || searchName.length < 3) {
       next(new MpqdataApiError('Invalid Alliance search'));
