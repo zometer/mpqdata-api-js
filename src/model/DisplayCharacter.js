@@ -3,8 +3,8 @@ const AbilityLevel = require('./AbilityLevel');
 const sequelize = require('./sequelize');
 
 const DisplayCharacter = sequelize.define('DisplayCharacter', {
-  displayCharacterId: { 
-    type: DataTypes.STRING, 
+  displayCharacterId: {
+    type: DataTypes.STRING,
     primaryKey: true
   },
   mpqCharacterKey: DataTypes.STRING,
@@ -20,8 +20,8 @@ const DisplayCharacter = sequelize.define('DisplayCharacter', {
   imageUrlLarge: DataTypes.STRING,
   localeLanguage: DataTypes.STRING
 }, {
-  schema: "mpq_data",
-  tableName: "display_character_vw", 
+  schema: 'mpq_data',
+  tableName: 'display_character_vw',
   timestamps: false,
   underscored: true
 }
@@ -29,8 +29,8 @@ const DisplayCharacter = sequelize.define('DisplayCharacter', {
 
 DisplayCharacter.hasMany(AbilityLevel, {
   as: 'abilityLevels',
-  foreignKey: 'mpqCharacterKey', 
+  foreignKey: 'mpqCharacterKey',
   sourceKey: 'mpqCharacterKey'
-}); 
+});
 
 module.exports = DisplayCharacter;

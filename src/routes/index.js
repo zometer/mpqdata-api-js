@@ -8,6 +8,6 @@ const applyRoutes = (app) => {
   coverRoutes(app);
   allianceRoutes(app);
   rosterRoutes(app);
-}
+};
 
 module.exports = applyRoutes;

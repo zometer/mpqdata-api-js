@@ -1,8 +1,8 @@
 
-class MpqdataApiError extends Error { 
-  constructor(message) { 
+class MpqdataApiError extends Error {
+  constructor(message) {
     super(message);
-    this.name = "MpqdataApiError";
+    this.name = 'MpqdataApiError';
   }
 }
 

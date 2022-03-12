@@ -1,13 +1,13 @@
-class Alliance { 
-  constructor(guid, name, type, maxSize, size) { 
+class Alliance {
+  constructor(guid, name, type, maxSize, size) {
     this.allianceGuid = guid;
-    this.allianceName = name; 
+    this.allianceName = name;
     this.allianceType = type;
-    this.allianceMaxSize = maxSize; 
+    this.allianceMaxSize = maxSize;
     this.members = [];
   }
 
-  get allianceSize () { 
+  get allianceSize() {
     return this.members.length;
   }
 }

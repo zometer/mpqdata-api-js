@@ -1,15 +1,15 @@
 const fetch = require('sync-fetch');
 const YAML = require('yaml');
-const token = process.env.GITHUB_API_TOKEN; 
+const token = process.env.GITHUB_API_TOKEN;
 const configUrl = process.env.CONFIG_URL;
 
 const remoteYaml = fetch(configUrl, {
-  headers: { 
-    "Accept": "application/vnd.github.v3.raw", 
-    "Authorization": `bearer ${token}`
+  headers: {
+    Accept: 'application/vnd.github.v3.raw',
+    Authorization: `bearer ${token}`
   }
-}).text(); 
+}).text();
 
-const remoteConfig = YAML.parse(remoteYaml); 
+const remoteConfig = YAML.parse(remoteYaml);
 
 module.exports = remoteConfig;

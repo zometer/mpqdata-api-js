@@ -1,24 +1,24 @@
-const { default: fetch } = require("node-fetch");
-const config = require("../config");
-const DisplayCharacter = require("../model/DisplayCharacter");
-const DisplayPlayer = require("../model/DisplayPlayer");
-const Player = require("../model/Player");
-const parseTemplatedString = require("../util/parseTemplatedString");
-const { Sequelize } = require("sequelize");
-const AbilityLevel = require("../model/AbilityLevel");
-const MpqdataApiError = require("../error/MpqdataApiError");
+const { default: fetch } = require('node-fetch');
+const config = require('../config');
+const DisplayCharacter = require('../model/DisplayCharacter');
+const DisplayPlayer = require('../model/DisplayPlayer');
+const Player = require('../model/Player');
+const parseTemplatedString = require('../util/parseTemplatedString');
+const { Sequelize } = require('sequelize');
+const AbilityLevel = require('../model/AbilityLevel');
+const MpqdataApiError = require('../error/MpqdataApiError');
 
-const headers = {}
-headers[config.remoteApis.mpq.deviceIdHeader] = config.remoteApis.mpq.deviceId; 
+const headers = {};
+headers[config.remoteApis.mpq.deviceIdHeader] = config.remoteApis.mpq.deviceId;
 
-const fetchRosterEntries = async (apiCharacters) => { 
+const fetchRosterEntries = async (apiCharacters) => {
   const regEx = /_\w+$/g;
   const criteriaList = apiCharacters
     .map( c => {
-      let mpqCharacterKey = c.character_identifier.replaceAll(regEx, ""); 
-      let effectiveLevel = c.effective_level; 
-      let localeLanguage = 'en'; 
-      return { mpqCharacterKey, effectiveLevel, localeLanguage }; 
+      const mpqCharacterKey = c.character_identifier.replaceAll(regEx, '');
+      const effectiveLevel = c.effective_level;
+      const localeLanguage = 'en';
+      return { mpqCharacterKey, effectiveLevel, localeLanguage };
     })
   ;
 
@@ -27,60 +27,60 @@ const fetchRosterEntries = async (apiCharacters) => {
     attributes: {
       exclude: ['characterBio']
     },
-    include: {model: AbilityLevel, as: 'abilityLevels'},
+    include: { model: AbilityLevel, as: 'abilityLevels' },
     where: {
       [Op.or]: criteriaList
-    }, 
+    },
     order: [['displayLevel', 'DESC'], ['rarity', 'DESC'], 'name', ['abilityLevels', 'ordinalPosition']]
   } );
 
   const dbCharsWithAbilLvls = apiCharacters.map(apiChar => {
-    const mpqCharId = apiChar.character_identifier.replaceAll(regEx, "");
-    let dbChar = characters.find(c => c.mpqCharacterKey === mpqCharId && c.effectiveLevel === apiChar.effective_level); 
-    if (dbChar === undefined) { 
-      console.log("couldn't find", apiChar); 
-      throw new MpqdataApiError("Error mapping API character: " + apiChar);
+    const mpqCharId = apiChar.character_identifier.replaceAll(regEx, '');
+    let dbChar = characters.find(c => c.mpqCharacterKey === mpqCharId && c.effectiveLevel === apiChar.effective_level);
+    if (dbChar === undefined) {
+      console.log("couldn't find", apiChar);
+      throw new MpqdataApiError('Error mapping API character: ' + apiChar);
     }
 
     dbChar = JSON.parse(JSON.stringify(dbChar));
-    for (let i=0; i < apiChar.ability_levels.length; i++) { 
-      const level = convertAbilityLevel(apiChar.ability_levels[i]); 
-      dbChar.abilityLevels[i].level = level; 
+    for (let i = 0; i < apiChar.ability_levels.length; i++) {
+      const level = convertAbilityLevel(apiChar.ability_levels[i]);
+      dbChar.abilityLevels[i].level = level;
     }
 
     return dbChar;
   });
 
   return dbCharsWithAbilLvls;
-}
+};
 
-const convertAbilityLevel = (rawLevel) => { 
-  return (rawLevel / 5) + 1; 
-}
+const convertAbilityLevel = (rawLevel) => {
+  return (rawLevel / 5) + 1;
+};
 
 const PlayerService = {
-  fetchByDisplayPlayerByName: async (name) => { 
-    const player = await Player.findOne( {where: {playerName: name}} ); 
-    const rosterUrl = parseTemplatedString(config.remoteApis.mpq.playerInfoUrl, {playerGuid: player.playerGuid}); 
-    const apiPlayer = await fetch(rosterUrl, {headers}).then( res => res.json() ) ;
-    const characters = await fetchRosterEntries(apiPlayer.roster); 
+  fetchByDisplayPlayerByName: async (name) => {
+    const player = await Player.findOne( { where: { playerName: name } } );
+    const rosterUrl = parseTemplatedString(config.remoteApis.mpq.playerInfoUrl, { playerGuid: player.playerGuid });
+    const apiPlayer = await fetch(rosterUrl, { headers }).then( res => res.json() );
+    const characters = await fetchRosterEntries(apiPlayer.roster);
     return new DisplayPlayer(apiPlayer.player_name, apiPlayer.alliance_name, apiPlayer.alliance_role, characters);
   },
   mergeAndSave: async (members) => {
-    const names = members.map(m => m.playerName); 
-    const players = await Player.findAll( {where: {playerName: names}} );
+    const names = members.map(m => m.playerName);
+    const players = await Player.findAll( { where: { playerName: names } } );
     players.forEach(player => {
       members
         .filter(m => m.playerName === player.playerName)
-        .forEach( m => m.playerId = player.playerId ) 
+        .forEach( m => (m.playerId = player.playerId) )
       ;
     });
-    const newMembers = members.filter(m => m.playerId === null); 
-    if (newMembers.length > 0) { 
-      console.log("newMembers", newMembers);
-      Player.bulkCreate(newMembers); 
+    const newMembers = members.filter(m => m.playerId === null);
+    if (newMembers.length > 0) {
+      console.log('newMembers', newMembers);
+      Player.bulkCreate(newMembers);
     }
   }
-}; 
+};
 
 module.exports = PlayerService;
