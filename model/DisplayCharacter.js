@@ -1,4 +1,5 @@
 const DataTypes = require('sequelize');
+const AbilityLevel = require('./AbilityLevel');
 const sequelize = require('./sequelize');
 
 const DisplayCharacter = sequelize.define('DisplayCharacter', {
@@ -25,5 +26,11 @@ const DisplayCharacter = sequelize.define('DisplayCharacter', {
   underscored: true
 }
 );
+
+DisplayCharacter.hasMany(AbilityLevel, {
+  as: 'abilityLevels',
+  foreignKey: 'mpqCharacterKey', 
+  sourceKey: 'mpqCharacterKey'
+}); 
 
 module.exports = DisplayCharacter;
