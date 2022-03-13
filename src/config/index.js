@@ -1,5 +1,6 @@
 const db = require('./db');
 const remoteConfig = require('./remoteConfig');
+require('./marvelApiConfig');
 require('./logging');
 const logger = require('log4js').getLogger('config');
 
