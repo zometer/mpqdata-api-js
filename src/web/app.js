@@ -2,6 +2,12 @@ const express = require('express');
 const app = express();
 const applyRoutes = require('../routes');
 const logger = require('log4js').getLogger('web.app');
+const cors = require('cors');
+
+app.use(express.json());
+
+/* cors */
+app.use(cors({ origin: '*' }));
 
 applyRoutes(app);
 
