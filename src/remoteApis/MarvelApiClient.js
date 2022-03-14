@@ -1,4 +1,3 @@
-const { URL, URLSearchParams } = require('url');
 const logger = require('log4js').getLogger('MarvelApiClient');
 const config = require('../config').remoteApis.marvel;
 const MpqdataApiError = require('../error/MpqdataApiError');
@@ -6,6 +5,7 @@ const ImageApiSearchResult = require('./ImageApiSearchResult');
 const md5 = require('md5');
 const _ = require('lodash');
 const fetch = require('node-fetch');
+const utils = require('./utils');
 
 const SEARCH_PARAM_KEYS = {
   series: 'title',
@@ -29,7 +29,7 @@ const queryForImages = async (searchRequest) => {
       searchParams[SEARCH_PARAM_KEYS[k]] = searchRequest[k];
     })
   ;
-  const url = buildUrl(config.searchUrl, searchParams);
+  const url = utils.buildUrl(config.searchUrl, searchParams);
   logger.debug('searchUrl', url.toString());
 
   const response = await fetch(url)
@@ -65,7 +65,7 @@ const convertToSearchResults = async (response) => {
 
 const queryForImagesByIssueId = async (id) => {
   const params = addApiFieldsToRequestParams(config.publicKey, config.privateKey, { id });
-  const url = buildUrl(config.comicInfoUrl, params);
+  const url = utils.buildUrl(config.comicInfoUrl, params);
   const response = await fetch(url).then().catch(e => MpqdataApiError.throw(e.message));
 
   const results = extractImageApiSearchResultsFromApiResponse(response);
@@ -74,7 +74,7 @@ const queryForImagesByIssueId = async (id) => {
 
 const queryForImagesByUri = async (uri) => {
   const params = addApiFieldsToRequestParams(config.publicKey, config.privateKey, { });
-  const url = buildUrl(uri, params);
+  const url = utils.buildUrl(uri, params);
   logger.debug('queryForImagesByUri', url.toString());
 
   const response = await fetch(url).then(res => res.json()).catch(e => MpqdataApiError.throw(e.message));
@@ -100,12 +100,6 @@ const buildImageApiSearchResult = (id, image) => {
   const [imageUrlSmall, imageUrlMedium, imageUrlLarge] = extractImageUrls(image);
   const result = new ImageApiSearchResult('Marvel', id, imageUrlSmall, imageUrlMedium, imageUrlLarge);
   return result;
-};
-
-const buildUrl = (urlString, params) => {
-  const url = new URL(urlString);
-  url.search = new URLSearchParams(params);
-  return url;
 };
 
 const extractImageUrls = (image) => {
