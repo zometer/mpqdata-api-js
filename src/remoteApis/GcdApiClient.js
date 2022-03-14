@@ -24,12 +24,11 @@ const queryForImages = async (request) => {
 
   const response = await fetch(url).then(res => res.json()).catch(e => MpqdataApiError.throw(e.message));
   for (const elem of response) {
-    logger.debug( { elem } );
     const imgResult = await queryForImagesById(elem.id);
     results.push(imgResult);
   }
 
-  logger.debug(results);
+  logger.debug('queryForImages.results', results);
   return results;
 };
 
