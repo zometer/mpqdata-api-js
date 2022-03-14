@@ -12,6 +12,14 @@ const CharacterCoverService = {
     const results = await searchMarvelCovers(searchParams);
     const gcdResults = await searchGcdCovers(searchParams);
     return results.concat(gcdResults);
+  },
+  updateCover: async (cover) => {
+    logger.debug(cover);
+    const dbCover = await CharacterCover.findByPk(cover.characterCoverId);
+    Object.assign(dbCover, cover);
+    dbCover.save();
+    logger.debug('post-update', dbCover);
+    return dbCover;
   }
 };
 

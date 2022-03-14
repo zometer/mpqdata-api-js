@@ -18,6 +18,13 @@ const characterCoverController = {
     const searchRequest = req.body;
     const results = await CharacterCoverService.searchCoverImages(searchRequest);
     res.send(results);
+  },
+  updateCover: async (req, res, next) => {
+    const cover = req.body;
+    CharacterCoverService.updateCover(cover)
+      .then(result => res.send(result))
+      .catch(next)
+    ;
   }
 };
 
