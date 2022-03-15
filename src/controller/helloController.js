@@ -1,4 +1,3 @@
-const packageInfo = require('../../package.json');
 const { hello } = require('../service/HelloService');
 
 const helloController = (req, res) => {
