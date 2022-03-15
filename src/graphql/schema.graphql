@@ -1,0 +1,85 @@
+type Query { 
+  hello: Hello
+  allianceByName(name: String!): Alliance
+  allianceByGuid(guid: String!): Alliance
+  searchAlliances(name: String!, includeFull: Boolean!, includePrivate: Boolean!): [Alliance]
+}
+
+type Hello { 
+  name: String!
+  version: String!
+  now: String! # TODO: Date
+}
+
+type Alliance { 
+  allianceName: String!
+  allianceGuid: String!
+  allianceType: String!
+  allianceSize: Int!
+  allianceMaxSize: Int!
+  members: [AllianceMember!]
+}
+
+interface Person { 
+  playerName: String!
+  playerGuid: String!
+  allianceName: String!
+  allianceGuid: String!
+  allianceRole: String!
+} 
+
+type AllianceMember implements Person {
+  playerName: String!
+  playerGuid: String!
+  allianceName: String!
+  allianceGuid: String!
+  allianceRole: String!
+}
+
+type Player implements Person { 
+  playerName: String!
+  playerGuid: String!
+  allianceName: String!
+  allianceGuid: String!
+  allianceRole: String!
+  roster: [RosterEntry!]!
+}
+
+type RosterEntry {
+  instanceId: ID!
+  character: Character!
+  effectiveLevel: Int!
+  displayLevel: Int!
+  champion: Boolean
+  ablityLevels: [AbilityLevel!]!
+}
+
+type AbilityLevel { 
+  color: String!
+  level: Int!
+  ordinalPosition: Int!
+}
+
+type Character { 
+  mpqCharacterKey: String! 
+  name: String!
+  subtitle: String!
+  rarity: Int!
+  releaseDate: String! # TODO: Make Date Type
+  characterBio: String!
+  imageUrlSmall: String
+  imageUrlMedium: String
+  imageUrlLarge: String
+  localeLanguage: String!
+  abilities: [Ability!]!
+}
+
+type Ability { 
+  abilityKey: String!
+  abilitySet: Int
+  ordinalPosition: Int!
+  color: String! 
+  cost: Int
+  name: String!
+  description: String
+}
