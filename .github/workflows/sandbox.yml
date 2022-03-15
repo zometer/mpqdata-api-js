@@ -1,0 +1,36 @@
+# Sandbox
+
+name: Sandbox
+
+on:
+  workflow_dispatch:
+    inputs: 
+      npmScript: 
+        description: 'NPM script to run'
+        required: false
+        default: 'build'
+        type: string        
+      buildDockerImage: 
+        description: Build and push a Docker image
+        required: false 
+        type: boolean
+        default: true
+
+jobs:
+  troubleshoot: 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Inputs 
+        run: | 
+          echo "${{ toJSON(job) }}"
+          echo "${{ toJSON(github.event.inputs) }}"
+          echo "${{ github.event.inputs.buildDockerImage }}"
+      
+  build:
+    uses: zometer/github-actions/.github/workflows/build-npm-docker.yml@main 
+    with: 
+      buildDockerImage: true # ${{ github.event.inputs.buildDockerImage }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
+
