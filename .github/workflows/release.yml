@@ -1,0 +1,29 @@
+# Workflow for building a new release, incrementing the version, and 
+# deploying the helm chart to the github chart repo. 
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs: 
+      npmScript: 
+        description: 'NPM script to run'
+        required: false
+        default: 'build'
+        type: string        
+      npmRunVersionArgs: 
+        description: Arguments for npm version
+        required: false 
+        type: string
+        default: "patch"        
+jobs:
+  build:
+    uses: zometer/github-actions/.github/workflows/build-npm-docker.yml@main 
+    with: 
+      buildDockerImage: true
+      incrementVersion: true
+      npmRunVersionArgs: ${{ github.event.inputs.npmRunVersionArgs }} 
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
+

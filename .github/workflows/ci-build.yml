@@ -1,0 +1,31 @@
+# CI Build
+
+name: CI Build
+
+on:
+  push:
+    branches: [ main, feature/**, bugfix/** ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs: 
+      npmScript: 
+        description: 'NPM script to run'
+        required: false
+        default: 'build'
+        type: string        
+      buildDockerImage: 
+        description: Build and push a Docker image
+        required: false 
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    uses: zometer/github-actions/.github/workflows/build-npm-docker.yml@main 
+    with: 
+      buildDockerImage: true # ${{ github.event.inputs.buildDockerImage }} 
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
+

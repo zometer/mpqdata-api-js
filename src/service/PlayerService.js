@@ -55,8 +55,11 @@ const fetchRosterEntries = async (apiCharacters) => {
   return dbCharsWithAbilLvls;
 };
 
-const convertAbilityLevel = (rawLevel) => {
-  return (rawLevel / 5) + 1;
+const convertAbilityLevel = (rawAbilityLevel) => {
+  if ( rawAbilityLevel === 0 || rawAbilityLevel === 1) {
+    return rawAbilityLevel;
+  }
+  return (rawAbilityLevel / 5) + 1;
 };
 
 const PlayerService = {
