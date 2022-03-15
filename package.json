@@ -7,7 +7,7 @@
     "build": "npx eslint . && npm run package",
     "start": "nodemon index.js",
     "package": "mkdir -p dist && npm pack --pack-destination dist/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "files": [
     "src/",
@@ -33,6 +33,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15"
   },
   "dependencies": {
