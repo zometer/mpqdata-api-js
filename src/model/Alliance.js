@@ -5,10 +5,11 @@ class Alliance {
     this.allianceType = type;
     this.allianceMaxSize = maxSize;
     this.members = [];
+    this.size = size;
   }
 
   get allianceSize() {
-    return this.members.length;
+    return this.members.length > 0 ? this.members.length : this.size;
   }
 }
 
