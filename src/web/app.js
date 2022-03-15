@@ -1,8 +1,10 @@
 const express = require('express');
 const app = express();
-const applyRoutes = require('../routes');
-const logger = require('log4js').getLogger('web.app');
 const cors = require('cors');
+const { graphqlHTTP } = require('express-graphql');
+const logger = require('log4js').getLogger('web.app');
+const applyRoutes = require('../routes');
+const graphqlOptions = require('../graphql');
 
 app.use(express.json());
 
@@ -10,6 +12,11 @@ app.use(express.json());
 app.use(cors({ origin: '*' }));
 
 applyRoutes(app);
+
+/* GraphQL */
+logger.debug({ graphqlOptions });
+app.use('/api/graphql', graphqlHTTP(graphqlOptions));
+logger.info('graphql api started');
 
 /* Error Handling */
 app.use('/api/rest/*', (error, req, res, next) => {
