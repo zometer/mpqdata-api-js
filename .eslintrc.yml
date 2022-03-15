@@ -4,6 +4,9 @@ env:
   node: true
 extends:
   - standard
+ignorePatterns: 
+  - "**/__tests__/**" 
+  - "**/?(*.)+(spec|test).[tj]s?(x)"
 parserOptions:
   ecmaVersion: latest
 rules: 
