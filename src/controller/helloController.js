@@ -1,7 +1,8 @@
 const packageInfo = require('../../package.json');
+const { hello } = require('../service/HelloService');
 
 const helloController = (req, res) => {
-  res.send( { now: new Date(), name: packageInfo.name, version: packageInfo.version } );
+  res.send( hello() );
 };
 
 module.exports = helloController;
