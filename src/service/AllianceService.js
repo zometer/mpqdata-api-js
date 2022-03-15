@@ -52,9 +52,16 @@ const search = async (name, includeFull, includePrivate) => {
   });
 
   logger.debug('searchUrl', searchUrl);
-  const allianceSearchResults = await fetch(searchUrl, { headers }).then(res => res.json());
+  const allianceSearchResults = await fetch(searchUrl, { headers })
+    .then(res => res.json())
+    .then(res => res.results)
+    .then(res => res.map(searchResult => new Alliance(
+      searchResult.alliance_guid, searchResult.alliance_name, searchResult.alliance_type, searchResult.alliance_max_size, searchResult.alliance_size)
+    ))
+    .catch(e => MpqdataApiError.throw(`Error mapping alliance search results: ${e.message}`))
+  ;
 
-  return allianceSearchResults.results;
+  return allianceSearchResults;
 };
 
 const AllianceService = { fetchByGuid, fetchByName, search };
