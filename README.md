@@ -37,7 +37,7 @@ Images are hosted at https://hub.docker.com/r/zometer/.
 
 ````bash
 # Run the application.
-$ docker run -it \
+$ docker run --rm -it \
     -e MPQ_API_DEVICEID=$DEVICE_ID \
     -e DB_URL=$DB_URL \
     -e DB_USERNAME=$DB_USERNAME \
@@ -48,6 +48,7 @@ $ docker run -it \
     -e MPQ_API_DEVICEID=$MPQ_API_DEVICEID \
     -e GITHUB_API_TOKEN=$GITHUB_API_TOKEN \
     -e CONFIG_URL=$CONFIG_URL \
+    -p $PORT:$PORT \
     zometer/mpqdata-api-js:latest
 ````
 
