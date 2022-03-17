@@ -25,9 +25,6 @@ const fetchRosterEntries = async (apiCharacters) => {
 
   const Op = Sequelize.Op;
   const characters = await DisplayCharacter.findAll( {
-    attributes: {
-      exclude: ['characterBio']
-    },
     include: { model: AbilityLevel, as: 'abilityLevels' },
     where: {
       [Op.or]: criteriaList
@@ -48,6 +45,8 @@ const fetchRosterEntries = async (apiCharacters) => {
       const level = convertAbilityLevel(apiChar.ability_levels[i]);
       dbChar.abilityLevels[i].level = level;
     }
+    dbChar.instanceId = apiChar.instance_id;
+    dbChar.champion = apiChar.is_champion;
 
     return dbChar;
   });

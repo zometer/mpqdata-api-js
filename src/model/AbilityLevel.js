@@ -12,13 +12,13 @@ const AbilityLevel = sequelize.define('AbilityLevel', {
   abilitySet: DataTypes.INTEGER,
   ordinalPosition: DataTypes.INTEGER,
   color: DataTypes.STRING,
-  abilityLevel: {
+  level: {
     type: DataTypes.VIRTUAL,
     get() {
-      return this.getDataValue('abilityLevel');
+      return this.getDataValue('level');
     },
     set(value) {
-      this.setDataValue('abilityLevel', value);
+      this.setDataValue('level', value);
     }
   }
 }, {

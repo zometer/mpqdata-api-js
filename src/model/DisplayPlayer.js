@@ -1,10 +1,10 @@
 
 class DisplayPlayer {
-  constructor(playerName, allianceName, allianceRole, characters) {
+  constructor(playerName, allianceName, allianceRole, roster) {
     this.playerName = playerName;
     this.allianceName = allianceName;
     this.allianceRole = allianceRole;
-    this.characters = characters;
+    this.roster = roster;
   }
 }
 

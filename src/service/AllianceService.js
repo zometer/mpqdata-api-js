@@ -24,14 +24,14 @@ const fetchByGuid = async (guid) => {
 const fetchByName = async (name) => {
   logger.debug(`starting fetchByName(${name})`);
 
-  const apiAlliances = await search(name, true, true);
+  const searchAlliances = await search(name, true, true);
 
-  logger.debug('apiAlliances', apiAlliances);
-  if (apiAlliances.length !== 1 || apiAlliances[0].alliance_name.toLowerCase() !== name.toLowerCase()) {
+  logger.debug('apiAlliances', searchAlliances);
+  if (searchAlliances.length !== 1 || searchAlliances[0].allianceName.toLowerCase() !== name.toLowerCase()) {
     throw new MpqdataApiError(`Could not find Alliance: ${name}`);
   }
 
-  const guid = apiAlliances[0].alliance_guid;
+  const guid = searchAlliances[0].allianceGuid;
   const alliance = await fetchByGuid(guid);
   return alliance;
 };
