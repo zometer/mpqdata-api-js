@@ -3,6 +3,7 @@ type Query {
   allianceByName(name: String!): Alliance
   allianceByGuid(guid: String!): Alliance
   searchAlliances(name: String!, includeFull: Boolean!, includePrivate: Boolean!): [Alliance]
+  playerByName(name: String!): Player
 }
 
 type Hello { 
@@ -22,36 +23,21 @@ type Alliance {
 
 interface Person { 
   playerName: String!
-  playerGuid: String!
   allianceName: String!
-  allianceGuid: String!
   allianceRole: String!
 } 
 
 type AllianceMember implements Person {
   playerName: String!
-  playerGuid: String!
   allianceName: String!
-  allianceGuid: String!
   allianceRole: String!
 }
 
 type Player implements Person { 
   playerName: String!
-  playerGuid: String!
   allianceName: String!
-  allianceGuid: String!
   allianceRole: String!
-  roster: [RosterEntry!]!
-}
-
-type RosterEntry {
-  instanceId: ID!
-  character: Character!
-  effectiveLevel: Int!
-  displayLevel: Int!
-  champion: Boolean
-  ablityLevels: [AbilityLevel!]!
+  roster: [Character!]!
 }
 
 type AbilityLevel { 
@@ -72,6 +58,13 @@ type Character {
   imageUrlLarge: String
   localeLanguage: String!
   abilities: [Ability!]!
+
+  # Optional Roster Instances
+  instanceId: ID
+  effectiveLevel: Int
+  displayLevel: Int
+  champion: Boolean
+  abilityLevels: [AbilityLevel!]
 }
 
 type Ability { 
