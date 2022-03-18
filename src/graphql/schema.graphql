@@ -4,6 +4,7 @@ type Query {
   allianceByGuid(guid: String!): Alliance
   searchAlliances(name: String!, includeFull: Boolean!, includePrivate: Boolean!): [Alliance]
   playerByName(name: String!): Player
+  rosteredCharacter(name: String!, instanceId:Int!): Character!
 }
 
 type Hello { 

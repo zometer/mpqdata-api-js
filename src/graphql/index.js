@@ -12,7 +12,8 @@ const resolver = {
   allianceByName: ({ name }) => AllianceService.fetchByName(name),
   allianceByGuid: ({ guid }) => AllianceService.fetchByGuid(guid),
   searchAlliances: ({ name, includeFull, includePrivate }) => AllianceService.search(name, includeFull, includePrivate),
-  playerByName: ({ name }) => PlayerService.fetchByDisplayPlayerByName(name)
+  playerByName: ({ name }) => PlayerService.fetchByDisplayPlayerByName(name),
+  rosteredCharacter: ({ name, instanceId }) => PlayerService.fetchRosteredCharacter(name, instanceId)
 };
 
 const graphqlOptions = {
