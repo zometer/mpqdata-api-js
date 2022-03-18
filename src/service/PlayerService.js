@@ -101,7 +101,6 @@ const PlayerService = {
     const apiPlayer = await fetchApiPlayer(playerName);
     const apiChar = apiPlayer.roster.find(c => c.instance_id === instanceId);
     const lookupTuple = convertApiCharacterToLookupTuple(apiChar);
-    logger.debug({lookupTuple});
 
     let character = await DisplayCharacter.findOne({
       include: { model: AbilityLevel, as: 'abilityLevels' },
