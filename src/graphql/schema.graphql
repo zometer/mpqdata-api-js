@@ -5,6 +5,7 @@ type Query {
   searchAlliances(name: String!, includeFull: Boolean!, includePrivate: Boolean!): [Alliance]
   playerByName(name: String!): Player
   rosteredCharacter(name: String!, instanceId:Int!): Character!
+  unprocessedCovers: [CharacterCover]!
 }
 
 type Hello { 
@@ -76,4 +77,23 @@ type Ability {
   cost: Int
   name: String!
   description: String
+}
+
+type CharacterCover { 
+  characterCoverId: ID!,
+  mpqCharacterKey: String!
+  marvelIssueId: Int
+  gcdIssueId: Int
+  series: String
+  seriesStartYear: Int
+  issue: String
+  variant: String
+  customCover: Boolean!
+  defaultCover: Boolean!
+  mpqEventName: String
+  ordinalPosition: Int
+  imageUrlSmall: String
+  imageUrlMedium: String
+  imageUrlLarge: String
+  complete: Boolean!
 }
