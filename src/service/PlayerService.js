@@ -7,21 +7,16 @@ const parseTemplatedString = require('../util/parseTemplatedString');
 const { Sequelize } = require('sequelize');
 const AbilityLevel = require('../model/AbilityLevel');
 const MpqdataApiError = require('../error/MpqdataApiError');
+const Ability = require('../model/Ability');
 const logger = require('log4js').getLogger('PlayerService');
 
 const headers = {};
 headers[config.remoteApis.mpq.deviceIdHeader] = config.remoteApis.mpq.deviceId;
 
+const normalizeCharKeyRegEx = /_\w+$/g;
+
 const fetchRosterEntries = async (apiCharacters) => {
-  const regEx = /_\w+$/g;
-  const criteriaList = apiCharacters
-    .map( c => {
-      const mpqCharacterKey = c.character_identifier.replaceAll(regEx, '');
-      const effectiveLevel = c.effective_level;
-      const localeLanguage = 'en';
-      return { mpqCharacterKey, effectiveLevel, localeLanguage };
-    })
-  ;
+  const criteriaList = apiCharacters.map(convertApiCharacterToLookupTuple);
 
   const Op = Sequelize.Op;
   const characters = await DisplayCharacter.findAll( {
@@ -33,7 +28,7 @@ const fetchRosterEntries = async (apiCharacters) => {
   } );
 
   const dbCharsWithAbilLvls = apiCharacters.map(apiChar => {
-    const mpqCharId = apiChar.character_identifier.replaceAll(regEx, '');
+    const mpqCharId = apiChar.character_identifier.replaceAll(normalizeCharKeyRegEx, '');
     let dbChar = characters.find(c => c.mpqCharacterKey === mpqCharId && c.effectiveLevel === apiChar.effective_level);
     if (dbChar === undefined) {
       logger.error("couldn't find", apiChar);
@@ -41,10 +36,8 @@ const fetchRosterEntries = async (apiCharacters) => {
     }
 
     dbChar = JSON.parse(JSON.stringify(dbChar));
-    for (let i = 0; i < apiChar.ability_levels.length; i++) {
-      const level = convertAbilityLevel(apiChar.ability_levels[i]);
-      dbChar.abilityLevels[i].level = level;
-    }
+    applyApiAbilityLevels(apiChar.ability_levels, dbChar.abilityLevels);
+
     dbChar.instanceId = apiChar.instance_id;
     dbChar.champion = apiChar.is_champion;
 
@@ -52,6 +45,27 @@ const fetchRosterEntries = async (apiCharacters) => {
   });
 
   return dbCharsWithAbilLvls;
+};
+
+const applyApiAbilityLevels = (apiAblityLevels, abilityLevels) => {
+  for (let i = 0; i < apiAblityLevels.length; i++) {
+    const level = convertAbilityLevel(apiAblityLevels[i]);
+    abilityLevels[i].level = level;
+  }
+};
+
+const fetchApiPlayer = async (name) => {
+  const player = await Player.findOne({ where: { playerName: name } });
+  const rosterUrl = parseTemplatedString(config.remoteApis.mpq.playerInfoUrl, { playerGuid: player.playerGuid });
+  const apiPlayer = await fetch(rosterUrl, { headers }).then(res => res.json());
+  return apiPlayer;
+};
+
+const convertApiCharacterToLookupTuple = (apiChar) => {
+  const mpqCharacterKey = apiChar.character_identifier.replaceAll(normalizeCharKeyRegEx, '');
+  const effectiveLevel = apiChar.effective_level;
+  const localeLanguage = 'en';
+  return { mpqCharacterKey, effectiveLevel, localeLanguage };
 };
 
 const convertAbilityLevel = (rawAbilityLevel) => {
@@ -63,9 +77,7 @@ const convertAbilityLevel = (rawAbilityLevel) => {
 
 const PlayerService = {
   fetchByDisplayPlayerByName: async (name) => {
-    const player = await Player.findOne( { where: { playerName: name } } );
-    const rosterUrl = parseTemplatedString(config.remoteApis.mpq.playerInfoUrl, { playerGuid: player.playerGuid });
-    const apiPlayer = await fetch(rosterUrl, { headers }).then( res => res.json() );
+    const apiPlayer = await fetchApiPlayer(name);
     const characters = await fetchRosterEntries(apiPlayer.roster);
     return new DisplayPlayer(apiPlayer.player_name, apiPlayer.alliance_name, apiPlayer.alliance_role, characters);
   },
@@ -83,6 +95,31 @@ const PlayerService = {
       logger.debug('newMembers', newMembers);
       Player.bulkCreate(newMembers);
     }
+  },
+  fetchRosteredCharacter: async (playerName, instanceId) => {
+    logger.debug(`fetchRosteredCharacter(${playerName}, ${instanceId})`);
+    const apiPlayer = await fetchApiPlayer(playerName);
+    const apiChar = apiPlayer.roster.find(c => c.instance_id === instanceId);
+    const lookupTuple = convertApiCharacterToLookupTuple(apiChar);
+    logger.debug({lookupTuple});
+
+    let character = await DisplayCharacter.findOne({
+      include: { model: AbilityLevel, as: 'abilityLevels' },
+      where: lookupTuple,
+      order: [['abilityLevels', 'ordinalPosition']]
+    });
+
+    character = JSON.parse(JSON.stringify(character));
+    applyApiAbilityLevels(apiChar.ability_levels, character.abilityLevels);
+    character.champion = apiChar.is_champion;
+
+    const abilities = await Ability.findAll({
+      where: { mpqCharacterKey: character.mpqCharacterKey },
+      order: [['abilitySet'], ['ordinalPosition']]
+    });
+    character.abilities = abilities;
+
+    return character;
   }
 };
 
